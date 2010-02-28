@@ -1,29 +1,14 @@
 package org.gescobar.management.test.cdi;
 
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.gescobar.management.Description;
-import org.gescobar.management.Impact;
-import org.gescobar.management.MBean;
 import org.gescobar.management.MBeanFactory;
-import org.gescobar.management.ManagedAttribute;
-import org.gescobar.management.ManagedOperation;
-import org.gescobar.management.ManagementException;
-import org.gescobar.management.cdi.AbstractMBeanFactory;
-import org.gescobar.management.cdi.AnnotatedTypeVisitor;
 import org.gescobar.management.cdi.CDIMBeanFactory;
-import org.gescobar.management.cdi.DynamicMBeanInfoBuilder;
-import org.gescobar.management.cdi.ManagementExtension;
-import org.gescobar.management.cdi.ManagementInjectionTarget;
-import org.gescobar.management.cdi.StandardMBeanInfoBuilder;
 import org.gescobar.management.test.CounterAutoRegisterNoName;
 import org.gescobar.management.test.CounterAutoRegisterWithName;
-import org.gescobar.management.util.MBeanImpl;
 import org.gescobar.management.util.MBeanServerLocator;
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -38,27 +23,21 @@ import org.testng.annotations.Test;
  * @author German Escobar
  *
  */
-public class TestAutoRegistration extends Arquillian {
-    
-    private static Logger log = Logger.getLogger("TestAutoRegistration"); 
+public class TestAutoRegistration extends Arquillian { 
     
     @Deployment
     public static JavaArchive createDeployment() {
 	
 	JavaArchive archive = Archives.create("test.jar", JavaArchive.class)
-		.addClasses(ManagementException.class, MBeanFactory.class, MBeanImpl.class, 
-			Description.class, Impact.class, ManagedAttribute.class, 
-			ManagedOperation.class, MBean.class, AbstractMBeanFactory.class, 
-			AnnotatedTypeVisitor.class, CDIMBeanFactory.class, DynamicMBeanInfoBuilder.class,
-			ManagementExtension.class, ManagementInjectionTarget.class,
-			StandardMBeanInfoBuilder.class,MBeanServerLocator.class)
+		.addPackage(MBeanFactory.class.getPackage()) 
+		.addPackage(CDIMBeanFactory.class.getPackage())
+		.addPackage(MBeanServerLocator.class.getPackage())
 		.addClasses(CounterAutoRegisterWithName.class, CounterAutoRegisterNoName.class)
-		.addManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension", "services/javax.enterprise.inject.spi.Extension")
+		.addManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension", 
+			"services/javax.enterprise.inject.spi.Extension")
 		.addManifestResource(
 			new ByteArrayAsset("<beans/>".getBytes()), 
 	                     Paths.create("beans.xml"));
-	
-	log.info("Archive: " + archive.toString(true));
 	
 	return archive;
     }
