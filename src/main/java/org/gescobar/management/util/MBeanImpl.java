@@ -113,6 +113,7 @@ public class MBeanImpl<T> implements DynamicMBean {
 		
 		if (isAssignable(f.getType(), value.getClass())) {
 		    try {
+			f.setAccessible(true);
 			f.set(implementation, value);
 		    } catch (IllegalAccessException e) {
 			throw new ReflectionException(e);

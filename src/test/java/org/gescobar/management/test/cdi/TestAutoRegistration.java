@@ -12,10 +12,10 @@ import org.gescobar.management.test.CounterAutoRegisterWithName;
 import org.gescobar.management.util.MBeanServerLocator;
 import org.jboss.arquillian.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
-import org.jboss.shrinkwrap.api.Archives;
-import org.jboss.shrinkwrap.api.Paths;
+import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.impl.base.asset.ByteArrayAsset;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,16 +28,14 @@ public class TestAutoRegistration extends Arquillian {
     @Deployment
     public static JavaArchive createDeployment() {
 	
-	JavaArchive archive = Archives.create("test.jar", JavaArchive.class)
+	JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "test.jar")
 		.addPackage(MBeanFactory.class.getPackage()) 
 		.addPackage(CDIMBeanFactory.class.getPackage())
 		.addPackage(MBeanServerLocator.class.getPackage())
 		.addClasses(CounterAutoRegisterWithName.class, CounterAutoRegisterNoName.class)
 		.addManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension", 
 			"services/javax.enterprise.inject.spi.Extension")
-		.addManifestResource(
-			new ByteArrayAsset("<beans/>".getBytes()), 
-	                     Paths.create("beans.xml"));
+		.addManifestResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
 	
 	return archive;
     }
